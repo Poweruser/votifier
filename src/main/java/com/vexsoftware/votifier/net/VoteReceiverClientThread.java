@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -124,6 +125,12 @@ public class VoteReceiverClientThread extends Thread {
             } catch (BadPaddingException ex) {
                 LOG.log(Level.WARNING, "Unable to decrypt vote record. Make sure that that your public key");
                 LOG.log(Level.WARNING, "matches the one you gave the server list.", ex);
+            } catch (SocketTimeoutException ex) {
+                int timeout = 0;
+                try {
+                    timeout = this.clientSocket.getSoTimeout();
+                } catch (SocketException exc) {}
+                LOG.log(Level.WARNING, "A client connection timed out, aborting." + (timeout > 0 ? ("Set timeout: " + timeout + "ms") : ""));
             } catch (Exception ex) {
                 LOG.log(Level.WARNING, "Exception caught while receiving a vote notification", ex);
             }

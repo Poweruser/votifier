@@ -26,6 +26,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.logging.*;
 import javax.crypto.BadPaddingException;
 import org.bukkit.Bukkit;
@@ -129,12 +130,20 @@ public class VoteReceiver extends Thread {
 	            if(this.plugin.isDebug()) {
 	                LOG.log(Level.INFO, "Accepting new incoming connection from: " + socket.getInetAddress().toString());
 	            }
-	            socket.setSoTimeout(30000);
-	            new VoteReceiverClientThread(this.plugin, socket).start();
-	        } catch (SocketException ex) {
-	            LOG.log(Level.WARNING, "Protocol error. Ignoring packet - " + ex.getLocalizedMessage());
+	            try {
+	                socket.setSoTimeout(30000);
+	                new VoteReceiverClientThread(this.plugin, socket).start();
+	            } catch (IOException exception) {
+	                LOG.log(Level.WARNING, "Error while setting up a new incoming client connection");
+	                LOG.log(Level.WARNING, exception.toString());
+	                try {
+	                    socket.close();
+	                } catch (IOException e) {}
+	            }
+	        } catch (SocketTimeoutException e) {
+	            // nothing to do, accept() just timed out, as there was no incoming connection
 	        } catch (IOException e) {
-	            LOG.log(Level.WARNING, "Error while setting up a new incoming client connection");
+	            LOG.log(Level.WARNING, "Error while waiting for a new incoming client connection");
 	            LOG.log(Level.WARNING, e.toString());
 	        }
 	    }
