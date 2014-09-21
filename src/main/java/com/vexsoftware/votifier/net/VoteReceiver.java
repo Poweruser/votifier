@@ -110,21 +110,21 @@ public class VoteReceiver extends Thread {
 	@Override
 	public void run() {
 
-		// Main loop.
-		while (running) {
-			try {
-				Socket socket = server.accept();
+	    // Main loop.
+	    while (running) {
+	        try {
+	            Socket socket = server.accept();
 	            if(this.plugin.isDebug()) {
 	                LOG.log(Level.INFO, "Accepting new incoming connection from: " + socket.getInetAddress().toString());
 	            }
-				socket.setSoTimeout(30000);
-				new VoteReceiverClientThread(this.plugin, socket).start();
-			} catch (SocketException ex) {
-				LOG.log(Level.WARNING, "Protocol error. Ignoring packet - " + ex.getLocalizedMessage());
-			} catch (IOException e) {
-			    LOG.log(Level.WARNING, "Error while setting up a new incoming client connection");
-			    LOG.log(Level.WARNING, e.toString());
-            }
-		}
+	            socket.setSoTimeout(30000);
+	            new VoteReceiverClientThread(this.plugin, socket).start();
+	        } catch (SocketException ex) {
+	            LOG.log(Level.WARNING, "Protocol error. Ignoring packet - " + ex.getLocalizedMessage());
+	        } catch (IOException e) {
+	            LOG.log(Level.WARNING, "Error while setting up a new incoming client connection");
+	            LOG.log(Level.WARNING, e.toString());
+	        }
+	    }
 	}
 }
