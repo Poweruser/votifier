@@ -81,6 +81,9 @@ public class VoteReceiver extends Thread {
 			server = new ServerSocket();
 			server.bind(new InetSocketAddress(host, port));
 			server.setSoTimeout(10000);
+			if(this.plugin.isDebug()) {
+			    LOG.info("ServerSocket is set up. Listening on Address: " + server.getInetAddress().toString());
+			}
 		} catch (Exception ex) {
 			LOG.log(Level.SEVERE,
 					"Error initializing vote receiver. Please verify that the configured");
@@ -109,9 +112,18 @@ public class VoteReceiver extends Thread {
 
 	@Override
 	public void run() {
-
+	    boolean firstRun = true;
+	    if(this.plugin.isDebug() && !running) {
+	        LOG.log(Level.WARNING, "VoteReceiver thread was shutdown before it was even started.");
+	    }
 	    // Main loop.
 	    while (running) {
+	        if(firstRun) {
+	            firstRun = false;
+	            if(this.plugin.isDebug()) {
+	                LOG.log(Level.INFO, "VoteReceiver thread started. Votifier is now ready to receive incoming connections.");
+	            }
+	        }
 	        try {
 	            Socket socket = server.accept();
 	            if(this.plugin.isDebug()) {
@@ -125,6 +137,9 @@ public class VoteReceiver extends Thread {
 	            LOG.log(Level.WARNING, "Error while setting up a new incoming client connection");
 	            LOG.log(Level.WARNING, e.toString());
 	        }
+	    }
+	    if(this.plugin.isDebug()) {
+	        LOG.log(Level.INFO, "VoteReceiver thread has stopped.");
 	    }
 	}
 }

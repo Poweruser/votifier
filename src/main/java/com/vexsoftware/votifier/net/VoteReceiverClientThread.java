@@ -131,6 +131,9 @@ public class VoteReceiverClientThread extends Thread {
             LOG.log(Level.WARNING, "VoteReceiverClientThread has not been properly initialized. " + (this.clientSocket != null ? (" For Client: " + this.clientSocket.getInetAddress().toString()) : ""));
         }
         this.cleanup();
+        if(this.plugin.isDebug()) {
+            LOG.log(Level.INFO, this.getName() + " finished.");
+        }
     }
 
     public void cleanup() {
