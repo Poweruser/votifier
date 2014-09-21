@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.RegisteredListener;
 
 import com.vexsoftware.votifier.Votifier;
 import com.vexsoftware.votifier.crypto.RSA;
@@ -114,6 +115,14 @@ public class VoteReceiverClientThread extends Thread {
                 // Call event in a synchronized fashion to ensure that the
                 // custom event runs in the
                 // the main server thread, not this one.
+                if(this.plugin.isDebug()) {
+                    String plugins = "";
+                    RegisteredListener[] listeners = VotifierEvent.getHandlerList().getRegisteredListeners();
+                    for(RegisteredListener rl: listeners) {
+                        plugins += (rl.getPlugin().getName() + ",");
+                    }
+                    LOG.log(Level.INFO, "Scheduling VotifierEvent. The registered handlers are: " + (plugins.isEmpty() ? "None" : plugins));
+                }
                 plugin.getServer().getScheduler()
                         .scheduleSyncDelayedTask(plugin, new Runnable() {
                             public void run() {
@@ -130,7 +139,7 @@ public class VoteReceiverClientThread extends Thread {
                 try {
                     timeout = this.clientSocket.getSoTimeout();
                 } catch (SocketException exc) {}
-                LOG.log(Level.WARNING, "A client connection timed out, aborting." + (timeout > 0 ? ("Set timeout: " + timeout + "ms") : ""));
+                LOG.log(Level.WARNING, "A client connection timed out, aborting." + (timeout > 0 ? ("Set timeout: " + timeout + "ms") : ""), ex);
             } catch (Exception ex) {
                 LOG.log(Level.WARNING, "Exception caught while receiving a vote notification", ex);
             }

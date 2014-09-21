@@ -107,7 +107,7 @@ public class VoteReceiver extends Thread {
 		try {
 			server.close();
 		} catch (Exception ex) {
-			LOG.log(Level.WARNING, "Unable to shut down vote receiver cleanly.");
+			LOG.log(Level.WARNING, "Unable to shut down vote receiver cleanly.", ex);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class VoteReceiver extends Thread {
 	                socket.setSoTimeout(30000);
 	                new VoteReceiverClientThread(this.plugin, socket).start();
 	            } catch (IOException exception) {
-	                LOG.log(Level.WARNING, "Error while setting up a new incoming client connection");
+	                LOG.log(Level.WARNING, "Error while setting up a new incoming client connection", exception);
 	                LOG.log(Level.WARNING, exception.toString());
 	                try {
 	                    socket.close();
@@ -143,7 +143,7 @@ public class VoteReceiver extends Thread {
 	        } catch (SocketTimeoutException e) {
 	            // nothing to do, accept() just timed out, as there was no incoming connection
 	        } catch (IOException e) {
-	            LOG.log(Level.WARNING, "Error while waiting for a new incoming client connection");
+	            LOG.log(Level.WARNING, "Error while waiting for a new incoming client connection", e);
 	            LOG.log(Level.WARNING, e.toString());
 	        }
 	    }
