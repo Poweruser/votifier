@@ -143,8 +143,10 @@ public class VoteReceiver extends Thread {
 	        } catch (SocketTimeoutException e) {
 	            // nothing to do, accept() just timed out, as there was no incoming connection
 	        } catch (IOException e) {
-	            LOG.log(Level.WARNING, "Error while waiting for a new incoming client connection", e);
-	            LOG.log(Level.WARNING, e.toString());
+	            if(running) {
+	                LOG.log(Level.WARNING, "Error while waiting for a new incoming client connection", e);
+	                LOG.log(Level.WARNING, e.toString());
+	            }
 	        }
 	    }
 	    if(this.plugin.isDebug()) {
